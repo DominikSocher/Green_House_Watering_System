@@ -1,34 +1,34 @@
 
 # Green_House_Watering_System
 
-## Micro controller based environmental data logging system for greenhouse plants.
+## Micro controller based environmental data logging system for greenhouse plants
 
-## Dominik Socher
-
-## Feb. 2021
+**Dominik Socher**
+**Feb. 2021**
 
 This project is intended for use in a greenhouse to water plants. The system can run autonomously. This means when the plants need watering a valve opens and water the plants. This is realized with a moister sensor in the soil. Should the soil get too dry and there is no direct sunlight the valve opens. When the sensor recognizes wet soil, the valve gets shut. The system uses a basic Human-Machine-Interface to show the user relevant information about the system. It shows in which state the system is, the actual sensor variables, and the tank level. The tank gets supervised with a percolation sensor. The amount of water gets subtracted from the tank and subsequently shown on the screen in real-time. The user can run the system manually via pushbutton. Should the tank be empty the system halts and presents an error message on the screen.
 
 ## Table of contents
 
-* [1 Introduction](#1-introduction)
-* [2 System architecture](#2-system-architecture)
-* [2.1 Software](#2.1-software)
-* [2.1.1 Function HMI](#2.1.1-function-hmi)
-* [2.1.2 Function analog_map](#2.1.2-function-analog_map)
-* [2.1.3 Function analog_value](#2.1.3-function-analog_value)
-* [2.1.4 Function full_auto](#2.1.4-function-full_auto)
-* [2.1.5 Function error handler](#2.1.5-function-error-handler)
-* [2.2 Task](#2.2-task)
-* [2.3 Hardware](#2.3-hardware)
-* [3 Verification](#3-verification)
+- [1 Introduction](#1-introduction)
+- [2 System architecture](#2-system-architecture)
+    - [2.1 Software](#2.1-software)
+        - [2.1.1 Function HMI](#2.1.1-function-hmi)
+        - [2.1.2 Function analog_map](#2.1.2-function-analog_map)
+        - [2.1.3 Function analog_value](#2.1.3-function-analog_value)
+        - [2.1.4 Function full_auto](#2.1.4-function-full_auto)
+        -[2.1.5 Function error handler](#2.1.5-function-error-handler)
+    - [2.2 Task](#2.2-task)
+    - [2.3 Hardware](#2.3-hardware)
+- [3 Verification](#3-verification)
 
 ## 1 Introduction
 
 The difference between greenhouse gardening and field gardening is how much you can control watering and environmental influences. There is no rainfall inside a greenhouse which makes it possible to control the watering. An automated watering system has the advantage that it can provide the most optimal condition for the plants. Depending on light and temperature the humidity level in the soil can change drastically. Plants such as tomatoes are solanum which means they only grow at night and need watering in the dark. An automated watering system makes it possible to take those and other aspects (depending on the plants in the greenhouse) into account and can therefore increase the harvest. To do so different sensors need to be used which control for example light and temperature. I recommend a watering system which is using a sensor/actuator system based on the NIOS 32 bit soft core inside the Altera MAX_10 FPGA. The system is constantly measuring three values: temperature, the humidity of the soil, and light intensity. Those three values are measured by their corresponding sensors (each sensor will be described in the final report). As soon as the value of one of the sensors is within a predefined range, the plants will be watered. A hall sensor measures the flow rate. The amount of used water is subsequently subtracted from the water tank content. The water valve is only open for a predefined period to avoid over watering. Should the desired humidity level be reached before the end of this period (which is measured by the humidity sensor), the valve shuts. The planned watering system will include the possibility to choose between automatic and manual mode. The user can either water the plants by pressing a button or the sensor measures are used by the system to decide if watering is needed. If there is no response from the sensors or no water left in the water tank the user will receive an error message on the screen. These error messages can be reset with the reset button. The reset button also resets the water level bank to 10 liters.
 The data can be presented on a VGA-Monitor to allow the user to monitor the system. Se following figure.
 
-![alt text](hmi.png "HMI")
+![alt text](hmi.png "HMI")  
+**Figure 1 HMI**
 
 ## 2 System architecture
 
@@ -45,6 +45,7 @@ extern alt_u32 analog_map(input parameters); | Computes raw analog data to perce
 extern alt_u32 analog_value(input parameters | This function polls the ADC
 extern alt_u8 full_auto(input parameters); | This function sets the output port to the mapped analog data.
 extern void error_handler(input parameters); | This function handles one error that can occur.
+**Table 1 Greenhouse functions**
 
 The header file sierra_includes.h is the main header file. In this file, all definitions for the tasks and global variables are made. Each function and variable is labeled as an extern to make this software portable. This header also includes all the system relevant headers for the sierra and Avalon hardware drivers. The following table gives a brief overview of the header content.
 
@@ -55,7 +56,8 @@ extern void hmi_code(void);	|Task handles the HMI
 extern void analog_code(void);|	Task handles the analog signal processing.
 extern void digital_in_code(void);|	Task handles the digital signal process.
 extern void auto_code(void);|	Task handles state switching between auto and hand mode.
-extern void error_code(void);|	Task handles the error states of the system.  
+extern void error_code(void);|	Task handles the error states of the system.
+**Table 2 Task code**
 
 The sierra_includes.h also includes the following header files. See following table
 
@@ -73,6 +75,7 @@ Function | Description
 #include <stdio.h>|	Standard library for c used for printf()
 #include "sys/alt_irq.h"|	Interrupt handler used for Arduino analog
 #include <DE10_Lite_Arduino_Driver.h>|	Arduino Macros plus I/O headers 
+**Table 3 Includes**
 
 #### 2.1.1 Function HMI
 
@@ -315,9 +318,11 @@ This task handles one error case which is an empty tank. It halts the system and
 The hardware used for this project is the DE10-Lite evaluation board by Terasic. The board contains a MAX 10 10M50DAF484C7G FPGA, 64 MB of SD-RAM, and a VGA Controller. Furthermore, an analog to digital converter is used.
 The schematic shows the electrical connection for the FR4 circuit board. Page one shows the connections between the board and the sensors and page two shows the debounce circuit for the input switches.
 
-![alt text](s1.png "Page 1")
+![alt text](s1.png "Page 1")  
+**Figure 2 Schematic Page 1**
 
-![alt text](s2.png "Page2")
+![alt text](s2.png "Page2")  
+**Figure 3 Schematic Page 2**
 
 ## 3 Verification
 
@@ -333,38 +338,47 @@ Reset Error |	When an error occurs reset button will reset the error and fill th
 
 By pressing pb_0 state switch to manual (see figure).
 
-![alt text](hand.png "Hand mode")
+![alt text](hand.png "Hand mode")  
+**Figure 4 Hand mode**
 
 While in Hand mode pressing PB_1 will open the solenoid. (See figure)
 
-![alt text](manual.png "Manual")
+![alt text](manual.png "Manual")  
+**Figure 5 Manual mode**
 
 ### 3.2 Automatic mode
 
 The system is in auto mode the soil is dry, but the light is above the threshold of 25%. No water flow (see figures).
 
-![alt text](dry.png "Dry")
+![alt text](dry.png "Dry")  
+**Figure 6 Dry soil**
 
-![alt text](light25.png "Light 25")
+![alt text](light25.png "Light 25")  
+**Figure 7 Light above 25 %**
 
 The system open the valve when the light level lays under the threshold of 25 (see figures).
 
-![alt text](autocondition.png "Auto")
+![alt text](autocondition.png "Auto")  
+**Figure 8 Auto condition**
 
-![alt text](autocondition2.png "Auto")
+![alt text](autocondition2.png "Auto")  
+**Figure 9 Auto condition**
 
 In the next case, the soil needs to be wet. Therefore, the sensor head is put in a bucked of moist soil. Now the valve shut. The light is still under the threshold. (see figure)
 
-![alt text](autocondition3.png "Auto")
+![alt text](autocondition3.png "Auto")  
+**Figure 10 Auto condition**
 
 ### 3.3 Error handler
 
 The threshold to fire the error is for demonstration purpose defined to 95. The value can be changed to the desired level. When the water flows through the Hall effect sensor the amount of water gets subtracted from the tank. When the tank reaches a level of 95 the valve shuts and the system changes to manual mode. This is to prevent that the system starts directly to water when above the threshold. Following Figure shows the HMI in the error state.
 
-![alt text](error.png "Error")
+![alt text](error.png "Error")  
+**Figure 11 Error**
 
 ### 3.4 Reset
 
 When the system is in an error state it is possible to confirm the error with the reset key. Pressing the key will also reset the tank level to 100%. The system remains in hand mode (see figure).
 
-![alt text](reset.png "Reset")
+![alt text](reset.png "Reset")  
+**Figure 12 Reset**
